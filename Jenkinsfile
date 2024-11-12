@@ -1,19 +1,34 @@
 pipeline {
-    agent any
+    agent { label 'slave2-u' }
+
     stages {
-        stage('Compile') {
-            steps { 
+        stage('gitclone') {
+            steps {
+                echo "cloning..."
+                git branch: 'main', url: 'https://github.com/Mallikarjun-S-H/addressbook.git'
+            }
+        }
+        stage('build') {
+            steps {
+                echo "build..."
                 sh 'mvn compile'
             }
         }
         stage('test') {
-            steps { 
+            steps {
+                echo "testing..."
                 sh 'mvn test'
             }
         }
-        stage('package') {
-            steps { 
+         stage('deploy') {
+            steps {
+                echo "packaging..."
                 sh 'mvn package'
+            }
+        }
+        stage('archive') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.war', allowEmptyArchive: true
             }
         }
     }
